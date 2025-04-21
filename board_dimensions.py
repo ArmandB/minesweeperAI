@@ -23,7 +23,7 @@ def drawLines(img, lines):
     i = 0
     if lines is not None:
         for line in lines:
-            print(line)
+            # print(line)
             x1, y1, x2, y2 = line
             cv2.line(img, (x1, y1), (x2, y2), (128, 0, 128), 1)
             # if i == 2:
@@ -48,16 +48,15 @@ def getCellSize(filtered_horizontal_lines, filtered_vertical_lines):
     cellSizeX = (filtered_vertical_lines[1][0] - filtered_vertical_lines[0][0]) #horizontal lines will by Y distance apart [x1 y1 x2 y2]
     #TODO better checking for robustness. make sure all lines are the same distance apart
     return (cellSizeX, cellSizeY)
-    print("hello")
 
 """ Get bounding box for minesweeper cells aray"""
 def getCellsBB(filtered_hlines, filtered_vlines):
-    print("horizontal")
-    print(filtered_hlines[0])
-    print(filtered_hlines[-1])
-    print("vertical")
-    print(filtered_vlines[0])
-    print(filtered_vlines[-1])
+    # print("horizontal")
+    # print(filtered_hlines[0])
+    # print(filtered_hlines[-1])
+    # print("vertical")
+    # print(filtered_vlines[0])
+    # print(filtered_vlines[-1])
 
     yUpper = filtered_hlines[0][1]
     yLower = filtered_hlines[-1][1]
@@ -135,9 +134,9 @@ def filterGridlines(horizontal_lines, vertical_lines):
 def getBoardDimensions():
     global debugImgId
     # Capture an image that contains the game board 
-    screenshot = pyautogui.screenshot(region=(115, 306, 1345-115, 971-306)) #region=(left, top, width, height)
-    screenshotTopLeft = (115, 306)
-    screenshotBottomRight = (1345-115, 971-306)
+    screenshot = pyautogui.screenshot(region=(60, 267, 1286-60, 927-267)) #region=(left, top, width, height)
+    screenshotTopLeft = (60, 267)
+    screenshotBottomRight = (1286-60, 927-267)
     screenshotName = '{:02}_minesweeper.png'.format(debugImgId)
     debugImgId += 1
     screenshot.save(screenshotName)
@@ -178,7 +177,6 @@ def getBoardDimensions():
 
     print("topleft: {}".format(BBTopLeft))
     print("bottomright: {}".format(BBBottomRight))
-    print("cell size: {}".format(cellSize))
 
     topLeftScreenCoords = (screenshotTopLeft[0] + BBTopLeft[0], screenshotTopLeft[1] + BBTopLeft[1])
     bottomRightScreenCoords = (screenshotTopLeft[0] + BBBottomRight[0], screenshotTopLeft[1] + BBBottomRight[1])

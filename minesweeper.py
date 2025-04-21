@@ -27,7 +27,6 @@ class CellState(Enum):
 
 # pyautogui.displayMousePosition() # Run this to get the current mouse position as mouse moves
 
-
 def main():
     boardVars = getBoardDimensions()
     # boardVars = getDebugBoardDimensions()

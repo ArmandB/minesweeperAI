@@ -11,8 +11,12 @@ class ScreenManager:
         self.MAX_X = MAX_X
         self.MAX_Y = MAX_Y      
 
-        self.numXCells = /cellSizeX
-        self.numYCells =  /cellSizeY
+
+        self.numXCells = (BBBottomRight[0]-BBTopLeft[0])/cellSize[0]
+        self.numYCells = (BBBottomRight[1]-BBTopLeft[1])/cellSize[1]
+        print("numXCells: ", self.numXCells)
+        print("numYCells: ", self.numYCells)
+        print("maxX, maxY: ", MAX_X, MAX_Y)
 
     def calcPosHelper(self, r, c):
         x = self.BBTopLeft[0] + c*self.cellSize[0] + self.cellSize[0]//2
