@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 from enum import Enum
 from PIL import Image
-from board_dimensions import getBoardDimensions
-from debug_vars import debugImgId
+from board_dimensions import getBoardDimensions, getDebugBoardDimensions
+from shared_vars import debugImgId
 import ScreenManager as sm
+import GameManager as gm
 """
 Building code to beat minesweeper at this url:
 https://minesweeperonline.com/#200
@@ -26,29 +27,65 @@ class CellState(Enum):
     EIGHT = 8
 
 # pyautogui.displayMousePosition() # Run this to get the current mouse position as mouse moves
-
+import pyautogui
+"""
+WE WERE WORKING ON INTERPRETSCREENSHOT IN GAMEMANAGER.PY
+TODO WHENEVER YOU START AGAIN, MAKE SURE TO CHECK TOPLEFT COORDS TO ENSURE THEY LOOK RIGHT
+TODO resume at subset inference in getNextClick()
+"""
 def main():
-    boardVars = getBoardDimensions()
-    # boardVars = getDebugBoardDimensions()
+    # pyautogui.displayMousePosition()
+    # Find the board
+    # boardVars = getBoardDimensions()
+    # exit()
+    
+    boardVars = getDebugBoardDimensions()
     cellSize = boardVars.getCellSize()
     topLeftScreenCoords = boardVars.getTopLeft()
     bottomRightScreenCoords = boardVars.getBotRight()
     screenManager = sm.ScreenManager(cellSize, topLeftScreenCoords, bottomRightScreenCoords)
 
+    gameManager = gm.GameManager(boardVars.getShape()) 
+    screenManager.setGameManager(gameManager)
+
+    screenManager.clickCell(8, 15) #8,15 in middle
+
+    # while num bombs > 0
+    i = 0
+    while i < 100:
+        # check if we won/lost?
+
+        # take a screenshot and interpret the image, finding the numbers and updating our internal board
+        fullScreenshot = screenManager.fullScreenshot()
+        screenManager.interpretScreenshot(fullScreenshot)
+        # gameManager.printBoard()
+        
+        # figure out which cell(s) to click
+        mineCellIds = []
+        clickCellIds = gameManager.getNextClick(mineCellIds)
+        print(f"Clicking cells: {clickCellIds}")
+        print(f"Mine cells: {mineCellIds}")
+
+        # click the cell(s)
+        for cellIds in clickCellIds:
+            screenManager.clickCell(cellIds[0], cellIds[1])
+        
+        for cellId in mineCellIds:
+            screenManager.rightClickCell(cellId[0], cellId[1])
+
+        i += 1
 
 
 
 
     exit()
-    screenManager.clickCell(8, 15) #8,15 in middle
-
 
     fullScreenshot = screenManager.fullScreenshot()
 
     fullScreenshot_cv2 = cv2.cvtColor(np.array(fullScreenshot), cv2.COLOR_RGB2BGR) # Convert to OpenCV format (rgb -> bgr)
     fullScreenshot_gray = cv2.cvtColor(fullScreenshot_cv2, cv2.COLOR_BGR2GRAY)
 
-    colors = [(0,0,0), (255, 0, 0), (0,255,0), (0, 0, 255), (130,0,75), (42,42,165)] #bgr 
+    colors = [(0,0,0), (255, 0, 0), (0,255,0), (0, 0, 255), (130,0,75), (42,42,165)] #bgr. colors to put squares around the numbers
     w = h = 39
     for i in range(0, 6):
         template = cv2.imread(f'templates/{i}.png')

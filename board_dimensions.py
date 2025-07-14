@@ -1,4 +1,4 @@
-from debug_vars import debugImgId
+from shared_vars import debugImgId
 import pyautogui
 import cv2
 import numpy as np
@@ -11,13 +11,21 @@ class boardVars:
         self.BBTopLeft = BBTopLeft
         self.BBBottomRight = BBBottomRight
 
+        self.numXCells = (BBBottomRight[0]-BBTopLeft[0])/cellSize[0]
+        self.numYCells = (BBBottomRight[1]-BBTopLeft[1])/cellSize[1]
+        print("numXCells: ", self.numXCells)
+        print("numYCells: ", self.numYCells)
+        self.numXCells = int(self.numXCells)
+        self.numYCells = int(self.numYCells)
+
     def getCellSize(self):
         return self.cellSize
     def getTopLeft(self):
         return self.BBTopLeft
     def getBotRight(self):
         return self.BBBottomRight
-
+    def getShape(self):
+        return (self.numYCells, self.numXCells)
 
 def drawLines(img, lines):
     i = 0
@@ -134,9 +142,11 @@ def filterGridlines(horizontal_lines, vertical_lines):
 def getBoardDimensions():
     global debugImgId
     # Capture an image that contains the game board 
-    screenshot = pyautogui.screenshot(region=(60, 267, 1286-60, 927-267)) #region=(left, top, width, height)
-    screenshotTopLeft = (60, 267)
-    screenshotBottomRight = (1286-60, 927-267)
+    screenshotTopLeft = (334, 303)
+    screenshotBottomRight = (1555, 965)
+    screenshot = pyautogui.screenshot(region=(screenshotTopLeft[0], screenshotTopLeft[1], 
+                screenshotBottomRight[0]-screenshotTopLeft[0], screenshotBottomRight[1]-screenshotTopLeft[1])) #region=(left, top, width, height)
+
     screenshotName = '{:02}_minesweeper.png'.format(debugImgId)
     debugImgId += 1
     screenshot.save(screenshotName)
@@ -175,23 +185,24 @@ def getBoardDimensions():
     cv2.imwrite('{:02}_minesweeper_grid_full.png'.format(debugImgId), img)
     debugImgId += 1
 
-    print("topleft: {}".format(BBTopLeft))
-    print("bottomright: {}".format(BBBottomRight))
+    print("topleft (screenshot): {}".format(BBTopLeft))
+    print("bottomright (screenshot): {}".format(BBBottomRight))
 
     topLeftScreenCoords = (screenshotTopLeft[0] + BBTopLeft[0], screenshotTopLeft[1] + BBTopLeft[1])
     bottomRightScreenCoords = (screenshotTopLeft[0] + BBBottomRight[0], screenshotTopLeft[1] + BBBottomRight[1])
 
-    print("top left screen coords: {}".format(topLeftScreenCoords)) #top left screen coords: (126, 316)
-    print("bottom right screen coords: {}".format(bottomRightScreenCoords)) #bottom right screen coords: (1331, 956)    
+    print("top left screen coords: {}".format(topLeftScreenCoords))
+    print("bottom right screen coords: {}".format(bottomRightScreenCoords))
     print("cell size: {}".format(cellSize)) #cell size: (40, 40)    
-    return boardVars(cellSize, BBTopLeft, BBBottomRight)
+    return boardVars(cellSize, topLeftScreenCoords, bottomRightScreenCoords)
 
 """ For testing. The other needs a completely empty board. This does not """
 def getDebugBoardDimensions():
-    topLeftScreenCoords = (126, 316)
-    bottomRightScreenCoords = (1331, 956)
+    # Copied from print statements when running get board dims
+    topLeftScreenCoords = (345, 316)
+    bottomRightScreenCoords = (1545, 956)
     cellSize = (40,40)
-    return boardVars(cellSize, BBTopLeft, BBBottomRight)    
+    return boardVars(cellSize, topLeftScreenCoords, bottomRightScreenCoords)    
 
 # TODO can maybe use this later to make things more robust. For now, we will just hardcode the values.
 # def detect_game_bounds():
